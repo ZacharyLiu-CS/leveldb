@@ -502,9 +502,14 @@ class PosixEnv : public Env {
   }
 
   Status NewRandomAccessFile(const std::string& filename,
-                             RandomAccessFile** result) override {
+                             RandomAccessFile** result,
+                             bool enable_direct_io) override {
     *result = nullptr;
-    int fd = ::open(filename.c_str(), O_RDONLY);
+    int fd;
+    if (enable_direct_io)
+      fd = ::open(filename.c_str(), O_RDONLY | O_DIRECT);
+    else
+      fd = ::open(filename.c_str(), O_RDONLY);
     if (fd < 0) {
       return PosixError(filename, errno);
     }

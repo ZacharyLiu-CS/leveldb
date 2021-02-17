@@ -84,10 +84,12 @@ class LEVELDB_EXPORT Env {
   // returns non-OK.  If the file does not exist, returns a non-OK
   // status.  Implementations should return a NotFound status when the file does
   // not exist.
+  // add direct io support for access instance
   //
   // The returned file may be concurrently accessed by multiple threads.
   virtual Status NewRandomAccessFile(const std::string& fname,
-                                     RandomAccessFile** result) = 0;
+                                     RandomAccessFile** results,
+                                     bool enable_direct_io = false) = 0;
 
   // Create an object that writes to a new file with the specified
   // name.  Deletes any existing file with the same name and creates a
@@ -317,8 +319,9 @@ class LEVELDB_EXPORT EnvWrapper : public Env {
     return target_->NewSequentialFile(f, r);
   }
   Status NewRandomAccessFile(const std::string& f,
-                             RandomAccessFile** r) override {
-    return target_->NewRandomAccessFile(f, r);
+                             RandomAccessFile** r,
+                             bool d_io = false) override {
+    return target_->NewRandomAccessFile(f, r, d_io);
   }
   Status NewWritableFile(const std::string& f, WritableFile** r) override {
     return target_->NewWritableFile(f, r);

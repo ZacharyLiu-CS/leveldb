@@ -201,7 +201,7 @@ class SpecialEnv : public EnvWrapper {
     return s;
   }
 
-  Status NewRandomAccessFile(const std::string& f, RandomAccessFile** r) {
+  Status NewRandomAccessFile(const std::string& f, RandomAccessFile** r, bool enable_direct_io = false) {
     class CountingFile : public RandomAccessFile {
      private:
       RandomAccessFile* target_;
@@ -2294,6 +2294,5 @@ int main(int argc, char** argv) {
     leveldb::BM_LogAndApply(100, 100000);
     return 0;
   }
-
   return leveldb::test::RunAllTests();
 }
